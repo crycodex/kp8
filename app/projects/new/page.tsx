@@ -43,7 +43,7 @@ export default function NewProjectPage() {
       await createProject({ name: name.trim(), client: client.trim(), status, description: description.trim() || undefined });
       router.push("/projects?success=created");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong");
+      setError(err instanceof Error ? err.message : "Algo salió mal");
     } finally {
       setLoading(false);
     }
@@ -58,13 +58,13 @@ export default function NewProjectPage() {
             href="/projects"
             className="inline-flex items-center gap-1 text-sm text-(--muted) hover:text-foreground"
           >
-            ← Back to projects
+            ← Volver a proyectos
           </Link>
           <h1 className="mt-4 text-2xl font-semibold tracking-tight text-foreground">
-            New project
+            Nuevo proyecto
           </h1>
           <p className="mt-1 text-sm text-(--muted)">
-            Add a new project to your dashboard
+            Agrega un nuevo proyecto a tu dashboard
           </p>
         </div>
       </header>
@@ -83,7 +83,7 @@ export default function NewProjectPage() {
           <div className="space-y-6">
             <div>
               <label htmlFor="name" className="mb-1.5 block text-sm font-medium text-foreground">
-                Project name *
+                Nombre del proyecto *
               </label>
               <input
                 id="name"
@@ -93,7 +93,7 @@ export default function NewProjectPage() {
                   setName(e.target.value);
                   if (fieldErrors.name) setFieldErrors((p) => ({ ...p, name: "" }));
                 }}
-                placeholder="e.g. Website redesign"
+                placeholder="e.g. Rediseño de sitio web"
                 className={`w-full rounded-lg border px-4 py-2.5 text-foreground placeholder:text-(--muted) focus:outline-none focus:ring-2 ${
                   fieldErrors.name
                     ? "border-red-500 focus:ring-red-500/30"
@@ -110,7 +110,7 @@ export default function NewProjectPage() {
 
             <div>
               <label htmlFor="client" className="mb-1.5 block text-sm font-medium text-foreground">
-                Client *
+                Cliente *
               </label>
               <input
                 id="client"
@@ -120,7 +120,7 @@ export default function NewProjectPage() {
                   setClient(e.target.value);
                   if (fieldErrors.client) setFieldErrors((p) => ({ ...p, client: "" }));
                 }}
-                placeholder="e.g. Acme Corp"
+                placeholder="e.g. Empresa X"
                     className={`w-full rounded-lg border px-4 py-2.5 text-foreground placeholder:text-(--muted) focus:outline-none focus:ring-2 ${
                   fieldErrors.client
                     ? "border-red-500 focus:ring-red-500/30"
@@ -135,7 +135,7 @@ export default function NewProjectPage() {
 
             <div>
               <label htmlFor="status" className="mb-1.5 block text-sm font-medium text-foreground">
-                Status
+                Estado
               </label>
               <select
                 id="status"
@@ -173,7 +173,7 @@ export default function NewProjectPage() {
               href="/projects"
               className="order-2 inline-flex items-center justify-center rounded-lg border border-(--border) px-4 py-2.5 text-sm font-medium text-foreground hover:bg-background sm:order-1"
             >
-              Cancel
+              Cancelar
             </Link>
             <button
               type="submit"
@@ -183,10 +183,10 @@ export default function NewProjectPage() {
               {loading ? (
                 <>
                   <span className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
-                  Saving...
+                  Guardando...
                 </>
               ) : (
-                "Create project"
+                "Crear proyecto"
               )}
             </button>
           </div>

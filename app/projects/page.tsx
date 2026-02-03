@@ -81,14 +81,14 @@ function ProjectsContent() {
               Projects
             </h1>
             <p className="mt-0.5 text-sm text-(--muted)">
-              Manage your projects and track progress
+              Gestiona tus proyectos y rastrea el progreso
             </p>
           </div>
           <Link
             href="/projects/new"
             className="inline-flex items-center gap-2 rounded-lg bg-(--accent) px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-(--accent-hover)"
           >
-            <span aria-hidden>+</span> New project
+            <span aria-hidden>+</span> Nuevo proyecto
           </Link>
         </div>
       </header>
@@ -104,12 +104,11 @@ function ProjectsContent() {
           <div className="relative flex-1 sm:max-w-xs">
             <input
               type="search"
-              placeholder="Search by name or client..."
+              placeholder="Buscar por nombre o cliente..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full rounded-lg border border-(--border) bg-(--card) py-2 pl-10 pr-4 text-sm text-foreground placeholder:text-(--muted) focus:border-(--accent) focus:outline-none focus:ring-1 focus:ring-[var(--ac
-              cent)/30"
-              aria-label="Search projects"
+              className="w-full rounded-lg border border-(--border) bg-(--card) py-2 pl-10 pr-4 text-sm text-foreground placeholder:text-(--muted) focus:border-(--accent) focus:outline-none focus:ring-1 focus:ring-(--accent)/30"
+              aria-label="Buscar proyectos"
             />
             <svg
               className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-(--muted)"
@@ -130,7 +129,7 @@ function ProjectsContent() {
         {loading && (
           <div className="flex flex-col items-center justify-center py-24">
             <div className="h-8 w-8 animate-spin rounded-full border-2 border-(--accent) border-t-transparent" />
-            <p className="mt-4 text-sm text-(--muted)">Loading projects...</p>
+            <p className="mt-4 text-sm text-(--muted)">Cargando proyectos...</p>
           </div>
         )}
 
@@ -144,15 +143,15 @@ function ProjectsContent() {
           <div className="rounded-xl border border-dashed border-(--border) bg-(--card) p-12 text-center">
             <p className="text-(--muted)">
               {projects.length === 0
-                ? "No projects yet. Create your first one!"
-                : "No projects match your search."}
+                ? "No hay proyectos aún. Crea tu primer proyecto!"
+                : "No hay proyectos que coincidan con tu búsqueda."}
             </p>
             {projects.length === 0 && (
               <Link
                 href="/projects/new"
                 className="mt-4 inline-flex items-center gap-2 rounded-lg bg-(--accent) px-4 py-2.5 text-sm font-medium text-white hover:bg-(--accent-hover)"
               >
-                + New project
+                + Nuevo proyecto
               </Link>
             )}
           </div>
@@ -165,19 +164,19 @@ function ProjectsContent() {
                 <thead>
                   <tr>
                     <th className="px-6 py-4 text-left text-xs font-medium uppercase tracking-wider text-(--muted)">
-                      Project
+                        Proyecto
                     </th>
                     <th className="px-6 py-4 text-left text-xs font-medium uppercase tracking-wider text-(--muted)">
-                      Client
+                      Cliente
                     </th>
                     <th className="px-6 py-4 text-left text-xs font-medium uppercase tracking-wider text-(--muted)">
-                      Status
+                      Estado
                     </th>
                     <th className="px-6 py-4 text-left text-xs font-medium uppercase tracking-wider text-(--muted)">
-                      Updated
+                      Actualizado
                     </th>
                     <th className="px-6 py-4 text-right text-xs font-medium uppercase tracking-wider text-(--muted)">
-                      Actions
+                      Acciones
                     </th>
                   </tr>
                 </thead>
@@ -206,7 +205,7 @@ function ProjectsContent() {
                           href={`/projects/${project.id}`}
                           className="text-sm font-medium text-(--accent) hover:underline"
                         >
-                          View →
+                          Ver →
                         </Link>
                       </td>
                     </tr>
@@ -226,7 +225,7 @@ export default function ProjectsPage() {
     <Suspense fallback={
         <div className="flex min-h-screen flex-col items-center justify-center bg-background">
         <div className="h-8 w-8 animate-spin rounded-full border-2 border-(--accent) border-t-transparent" />
-        <p className="mt-4 text-sm text-(--muted)">Loading...</p>
+        <p className="mt-4 text-sm text-(--muted)">Cargando...</p>
       </div>
     }>
       <ProjectsContent />

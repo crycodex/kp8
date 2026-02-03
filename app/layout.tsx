@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Projects Dashboard | Kapa Ocho",
+  title: "Dashboard de Proyectos | Kapa Ocho",
   description: "Mini dashboard para gestionar proyectos y rastrear el progreso",
 };
 

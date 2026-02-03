@@ -67,7 +67,7 @@ export default function ProjectDetailPage() {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center bg-background">
         <div className="h-8 w-8 animate-spin rounded-full border-2 border-(--accent) border-t-transparent" />
-        <p className="mt-4 text-sm text-(--muted)">Loading project...</p>
+        <p className="mt-4 text-sm text-(--muted)">Cargando proyecto...</p>
       </div>
     );
   }
@@ -75,12 +75,12 @@ export default function ProjectDetailPage() {
   if (error || !project) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center bg-background px-4">
-        <p className="text-(--muted)">{error ?? "Project not found"}</p>
+        <p className="text-(--muted)">{error ?? "Proyecto no encontrado"}</p>
         <Link
           href="/projects"
           className="mt-4 text-sm font-medium text-(--accent) hover:underline"
         >
-          ← Back to projects
+          ← Volver a proyectos
         </Link>
       </div>
     );
@@ -94,7 +94,7 @@ export default function ProjectDetailPage() {
             href="/projects"
             className="inline-flex items-center gap-1 text-sm text-(--muted) hover:text-foreground"
           >
-            ← Back to projects
+            ← Volver a proyectos
           </Link>
         </div>
       </header>
@@ -143,10 +143,10 @@ export default function ProjectDetailPage() {
                 {updating ? (
                   <>
                     <span className="mr-2 inline-block h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
-                    Updating...
+                    Actualizando...
                   </>
                 ) : (
-                  "Mark as Done"
+                  "Marcar como Completado"
                 )}
               </button>
             </div>
