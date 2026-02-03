@@ -1,36 +1,54 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Projects Dashboard
+
+A mini dashboard for managing projects, built with Next.js 16 (App Router), TypeScript, and Tailwind CSS.
 
 ## Getting Started
 
-First, run the development server:
-
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+pnpm install
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) and navigate to **Projects** to start.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Features
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **List projects** (`/projects`) — Table view with search by name or client, create button
+- **Create project** (`/projects/new`) — Form with validation, success/error feedback
+- **Project detail** (`/projects/[id]`) — Full project info, mark as Done
 
-## Learn More
+## Tech Stack
 
-To learn more about Next.js, take a look at the following resources:
+- Next.js 16 (App Router)
+- TypeScript
+- Tailwind CSS
+- Route Handlers for API
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## API Endpoints
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/projects` | List all projects |
+| POST | `/api/projects` | Create a project |
+| GET | `/api/projects/[id]` | Get project by ID |
+| PATCH | `/api/projects/[id]` | Update project (e.g. status) |
 
-## Deploy on Vercel
+## Persistence
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- **Server**: Data is stored in `.data/projects.json` (file-based local storage). Route Handlers run on the server and cannot access browser LocalStorage.
+- **Client**: API responses are synced to LocalStorage for faster loads and caching. On first load, cached data from LocalStorage is shown immediately when available.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Technical Decisions
+
+1. **File-based store on server**: Next.js Route Handlers execute on the server where LocalStorage does not exist. A JSON file (`.data/projects.json`) provides equivalent local persistence without a database.
+2. **Client LocalStorage sync**: All API responses are written to LocalStorage so the client has a mirror of the data for instant display on subsequent visits.
+3. **Validation**: Both client-side (form) and server-side (API) validation for name and client (min 2 chars).
+
+## Future Improvements
+
+- Status transitions (e.g. Planned → In progress → Done) instead of only "Mark as Done"
+- Edit project form
+- Delete project
+- Pagination for large project lists
+- Filters by status
+- Dark/light mode toggle (currently follows system preference)
