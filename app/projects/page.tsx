@@ -3,32 +3,47 @@
 import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import { FolderPlus, Search } from "lucide-react";
 import { fetchProjects } from "@/lib/api";
 import { getProjectsFromStorage } from "@/lib/local-storage";
+import { ThemeToggle } from "@/components/theme-toggle";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 import type { Project } from "@/lib/types";
 
+const STATUS_BADGE_VARIANTS: Record<Project["status"], string> = {
+  PLANNED: "bg-slate-200 text-slate-800 dark:bg-slate-700 dark:text-slate-200",
+  IN_PROGRESS: "bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-200",
+  DONE: "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-200",
+};
+
+const STATUS_LABELS: Record<Project["status"], string> = {
+  PLANNED: "Planificado",
+  IN_PROGRESS: "En progreso",
+  DONE: "Completado",
+};
+
 function StatusBadge({ status }: { status: Project["status"] }) {
-  const styles: Record<Project["status"], string> = {
-    PLANNED: "bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-200",
-    IN_PROGRESS: "bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-200",
-    DONE: "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-200",
-  };
-  const labels: Record<Project["status"], string> = {
-    PLANNED: "Planned",
-    IN_PROGRESS: "In progress",
-    DONE: "Done",
-  };
   return (
-    <span
-      className={`inline-flex shrink-0 items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${styles[status]}`}
-    >
-      {labels[status]}
-    </span>
+    <Badge variant="secondary" className={cn("border-0", STATUS_BADGE_VARIANTS[status])}>
+      {STATUS_LABELS[status]}
+    </Badge>
   );
 }
 
 function formatDate(iso: string): string {
-  return new Date(iso).toLocaleDateString("en-US", {
+  return new Date(iso).toLocaleDateString("es", {
     month: "short",
     day: "numeric",
     year: "numeric",
@@ -46,7 +61,6 @@ function ProjectsContent() {
   useEffect(() => {
     const success = searchParams.get("success");
     if (success === "created") {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setSuccessMessage("Proyecto creado exitosamente!");
       const t = setTimeout(() => setSuccessMessage(null), 4000);
       return () => clearTimeout(t);
@@ -55,7 +69,6 @@ function ProjectsContent() {
 
   useEffect(() => {
     const cached = getProjectsFromStorage();
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (cached.length > 0) setProjects(cached);
     fetchProjects()
       .then(setProjects)
@@ -66,30 +79,30 @@ function ProjectsContent() {
   const filtered = projects.filter((p) => {
     const q = search.toLowerCase().trim();
     if (!q) return true;
-    return (
-      p.name.toLowerCase().includes(q) ||
-      p.client.toLowerCase().includes(q)
-    );
+    return p.name.toLowerCase().includes(q) || p.client.toLowerCase().includes(q);
   });
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="border-b border-(--border) bg-(--card)">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-6 sm:px-6 lg:px-8">
+      <header className="sticky top-0 z-10 border-b bg-card/95 backdrop-blur supports-backdrop-filter:bg-card/60">
+        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
           <div>
-            <h1 className="text-2xl font-semibold tracking-tight text-foreground">
-              Projects
+            <h1 className="text-xl font-semibold tracking-tight sm:text-2xl">
+              Proyectos
             </h1>
-            <p className="mt-0.5 text-sm text-(--muted)">
+            <p className="text-sm text-muted-foreground">
               Gestiona tus proyectos y rastrea el progreso
             </p>
           </div>
-          <Link
-            href="/projects/new"
-            className="inline-flex items-center gap-2 rounded-lg bg-(--accent) px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-(--accent-hover)"
-          >
-            <span aria-hidden>+</span> Nuevo proyecto
-          </Link>
+          <div className="flex items-center gap-2">
+            <ThemeToggle />
+            <Button asChild>
+              <Link href="/projects/new">
+                <FolderPlus className="size-4" />
+                Nuevo proyecto
+              </Link>
+            </Button>
+          </div>
         </div>
       </header>
 
@@ -100,120 +113,90 @@ function ProjectsContent() {
           </div>
         )}
 
-        <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="relative flex-1 sm:max-w-xs">
-            <input
+        <div className="mb-6">
+          <div className="relative max-w-sm">
+            <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
               type="search"
               placeholder="Buscar por nombre o cliente..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full rounded-lg border border-(--border) bg-(--card) py-2 pl-10 pr-4 text-sm text-foreground placeholder:text-(--muted) focus:border-(--accent) focus:outline-none focus:ring-1 focus:ring-(--accent)/30"
+              className="pl-9"
               aria-label="Buscar proyectos"
             />
-            <svg
-              className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-(--muted)"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-              />
-            </svg>
           </div>
         </div>
 
         {loading && (
           <div className="flex flex-col items-center justify-center py-24">
-            <div className="h-8 w-8 animate-spin rounded-full border-2 border-(--accent) border-t-transparent" />
-            <p className="mt-4 text-sm text-(--muted)">Cargando proyectos...</p>
+            <div className="size-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+            <p className="mt-4 text-sm text-muted-foreground">Cargando proyectos...</p>
           </div>
         )}
 
         {error && (
-          <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-red-700 dark:border-red-800 dark:bg-red-900/20 dark:text-red-300">
-            {error}
-          </div>
+          <Card className="border-destructive/50 bg-destructive/5">
+            <CardContent className="pt-6">
+              <p className="text-destructive">{error}</p>
+            </CardContent>
+          </Card>
         )}
 
         {!loading && !error && filtered.length === 0 && (
-          <div className="rounded-xl border border-dashed border-(--border) bg-(--card) p-12 text-center">
-            <p className="text-(--muted)">
-              {projects.length === 0
-                ? "No hay proyectos aún. Crea tu primer proyecto!"
-                : "No hay proyectos que coincidan con tu búsqueda."}
-            </p>
-            {projects.length === 0 && (
-              <Link
-                href="/projects/new"
-                className="mt-4 inline-flex items-center gap-2 rounded-lg bg-(--accent) px-4 py-2.5 text-sm font-medium text-white hover:bg-(--accent-hover)"
-              >
-                + Nuevo proyecto
-              </Link>
-            )}
-          </div>
+          <Card className="border-dashed">
+            <CardContent className="flex flex-col items-center justify-center py-16">
+              <p className="text-center text-muted-foreground">
+                {projects.length === 0
+                  ? "No hay proyectos aún. Crea tu primer proyecto!"
+                  : "No hay proyectos que coincidan con tu búsqueda."}
+              </p>
+              {projects.length === 0 && (
+                <Button asChild className="mt-4">
+                  <Link href="/projects/new">
+                    <FolderPlus className="size-4" />
+                    Nuevo proyecto
+                  </Link>
+                </Button>
+              )}
+            </CardContent>
+          </Card>
         )}
 
         {!loading && !error && filtered.length > 0 && (
-          <div className="overflow-hidden rounded-xl border border-(--border) bg-(--card) shadow-sm">
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-(--border)">
-                <thead>
-                  <tr>
-                    <th className="px-6 py-4 text-left text-xs font-medium uppercase tracking-wider text-(--muted)">
-                        Proyecto
-                    </th>
-                    <th className="px-6 py-4 text-left text-xs font-medium uppercase tracking-wider text-(--muted)">
-                      Cliente
-                    </th>
-                    <th className="px-6 py-4 text-left text-xs font-medium uppercase tracking-wider text-(--muted)">
-                      Estado
-                    </th>
-                    <th className="px-6 py-4 text-left text-xs font-medium uppercase tracking-wider text-(--muted)">
-                      Actualizado
-                    </th>
-                    <th className="px-6 py-4 text-right text-xs font-medium uppercase tracking-wider text-(--muted)">
-                      Acciones
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-(--border)">
-                  {filtered.map((project) => (
-                    <tr
-                      key={project.id}
-                      className="transition-colors hover:bg-background"
-                    >
-                      <td className="px-6 py-4">
-                        <span className="font-medium text-foreground">
-                          {project.name}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 text-sm text-(--muted)">
-                        {project.client}
-                      </td>
-                      <td className="px-6 py-4">
-                        <StatusBadge status={project.status} />
-                      </td>
-                      <td className="px-6 py-4 text-sm text-(--muted)">
-                        {formatDate(project.updatedAt)}
-                      </td>
-                      <td className="px-6 py-4 text-right">
-                        <Link
-                          href={`/projects/${project.id}`}
-                          className="text-sm font-medium text-(--accent) hover:underline"
-                        >
-                          Ver →
-                        </Link>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
+          <Card className="overflow-hidden">
+            <CardContent className="p-0">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Proyecto</TableHead>
+                  <TableHead>Cliente</TableHead>
+                  <TableHead>Estado</TableHead>
+                  <TableHead>Actualizado</TableHead>
+                  <TableHead className="text-right">Acciones</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filtered.map((project) => (
+                  <TableRow key={project.id}>
+                    <TableCell className="font-medium">{project.name}</TableCell>
+                    <TableCell className="text-muted-foreground">{project.client}</TableCell>
+                    <TableCell>
+                      <StatusBadge status={project.status} />
+                    </TableCell>
+                    <TableCell className="text-muted-foreground">
+                      {formatDate(project.updatedAt)}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Button variant="ghost" size="sm" asChild>
+                        <Link href={`/projects/${project.id}`}>Ver →</Link>
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+            </CardContent>
+          </Card>
         )}
       </main>
     </div>
@@ -222,12 +205,14 @@ function ProjectsContent() {
 
 export default function ProjectsPage() {
   return (
-    <Suspense fallback={
+    <Suspense
+      fallback={
         <div className="flex min-h-screen flex-col items-center justify-center bg-background">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-(--accent) border-t-transparent" />
-        <p className="mt-4 text-sm text-(--muted)">Cargando...</p>
-      </div>
-    }>
+          <div className="size-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+          <p className="mt-4 text-sm text-muted-foreground">Cargando...</p>
+        </div>
+      }
+    >
       <ProjectsContent />
     </Suspense>
   );

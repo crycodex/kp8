@@ -3,13 +3,34 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { ArrowLeft, Loader2 } from "lucide-react";
 import { createProject } from "@/lib/api";
+import { ThemeToggle } from "@/components/theme-toggle";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import type { ProjectStatus } from "@/lib/types";
 
 const STATUS_OPTIONS: { value: ProjectStatus; label: string }[] = [
-  { value: "PLANNED", label: "Planned" },
-  { value: "IN_PROGRESS", label: "In progress" },
-  { value: "DONE", label: "Done" },
+  { value: "PLANNED", label: "Planificado" },
+  { value: "IN_PROGRESS", label: "En progreso" },
+  { value: "DONE", label: "Completado" },
 ];
 
 export default function NewProjectPage() {
@@ -25,10 +46,10 @@ export default function NewProjectPage() {
   function validate(): boolean {
     const errs: Record<string, string> = {};
     if (!name.trim() || name.trim().length < 2) {
-      errs.name = "Name must be at least 2 characters";
+      errs.name = "El nombre debe tener al menos 2 caracteres";
     }
     if (!client.trim() || client.trim().length < 2) {
-      errs.client = "Client must be at least 2 characters";
+      errs.client = "El cliente debe tener al menos 2 caracteres";
     }
     setFieldErrors(errs);
     return Object.keys(errs).length === 0;
@@ -40,7 +61,12 @@ export default function NewProjectPage() {
     if (!validate()) return;
     setLoading(true);
     try {
-      await createProject({ name: name.trim(), client: client.trim(), status, description: description.trim() || undefined });
+      await createProject({
+        name: name.trim(),
+        client: client.trim(),
+        status,
+        description: description.trim() || undefined,
+      });
       router.push("/projects?success=created");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Algo salió mal");
@@ -49,148 +75,122 @@ export default function NewProjectPage() {
     }
   }
 
-  const newLocal = "mb-6 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700";
   return (
     <div className="min-h-screen bg-background">
-      <header className="border-b border-(--border) bg-(--card)">
-        <div className="mx-auto max-w-2xl px-4 py-6 sm:px-6">
-          <Link
-            href="/projects"
-            className="inline-flex items-center gap-1 text-sm text-(--muted) hover:text-foreground"
-          >
-            ← Volver a proyectos
-          </Link>
-          <h1 className="mt-4 text-2xl font-semibold tracking-tight text-foreground">
-            Nuevo proyecto
-          </h1>
-          <p className="mt-1 text-sm text-(--muted)">
-            Agrega un nuevo proyecto a tu dashboard
-          </p>
+      <header className="sticky top-0 z-10 border-b bg-card/95 backdrop-blur supports-backdrop-filter:bg-card/60">
+        <div className="mx-auto flex max-w-2xl items-center justify-between px-4 py-4 sm:px-6">
+          <Button variant="ghost" size="sm" asChild>
+            <Link href="/projects">
+              <ArrowLeft className="size-4" />
+              Volver a proyectos
+            </Link>
+          </Button>
+          <ThemeToggle />
         </div>
       </header>
 
       <main className="mx-auto max-w-2xl px-4 py-8 sm:px-6">
-        <form
-          onSubmit={handleSubmit}
-          className="rounded-xl border border-(--border) bg-(--card) p-6 shadow-sm sm:p-8"
-        >
-          {error && (
-            <div className={newLocal}>
-              {error}
-            </div>
-          )}
-
-          <div className="space-y-6">
-            <div>
-              <label htmlFor="name" className="mb-1.5 block text-sm font-medium text-foreground">
-                Nombre del proyecto *
-              </label>
-              <input
-                id="name"
-                type="text"
-                value={name}
-                onChange={(e) => {
-                  setName(e.target.value);
-                  if (fieldErrors.name) setFieldErrors((p) => ({ ...p, name: "" }));
-                }}
-                placeholder="e.g. Rediseño de sitio web"
-                className={`w-full rounded-lg border px-4 py-2.5 text-foreground placeholder:text-(--muted) focus:outline-none focus:ring-2 ${
-                  fieldErrors.name
-                    ? "border-red-500 focus:ring-red-500/30"
-                    : "border-(--border) focus:ring-(--accent)/30"
-                }`}
-                autoFocus
-                disabled={loading}
-              />
-              {fieldErrors.name && (
-                <p className="mt-1 text-sm text-red-600 text-red
-                -400">{fieldErrors.name}</p>
+        <Card>
+          <CardHeader>
+            <CardTitle>Nuevo proyecto</CardTitle>
+            <CardDescription>Agrega un nuevo proyecto a tu dashboard</CardDescription>
+          </CardHeader>
+          <form onSubmit={handleSubmit}>
+            <CardContent className="space-y-6">
+              {error && (
+                <div className="rounded-lg border border-destructive/50 bg-destructive/10 p-4 text-sm text-destructive">
+                  {error}
+                </div>
               )}
-            </div>
 
-            <div>
-              <label htmlFor="client" className="mb-1.5 block text-sm font-medium text-foreground">
-                Cliente *
-              </label>
-              <input
-                id="client"
-                type="text"
-                value={client}
-                onChange={(e) => {
-                  setClient(e.target.value);
-                  if (fieldErrors.client) setFieldErrors((p) => ({ ...p, client: "" }));
-                }}
-                placeholder="e.g. Empresa X"
-                    className={`w-full rounded-lg border px-4 py-2.5 text-foreground placeholder:text-(--muted) focus:outline-none focus:ring-2 ${
-                  fieldErrors.client
-                    ? "border-red-500 focus:ring-red-500/30"
-                    : "border-(--border) focus:ring-(--accent)/30"
-                }`}
-                disabled={loading}
-              />
-              {fieldErrors.client && (
-                <p className="mt-1 text-sm text-red-600">{fieldErrors.client}</p>
-              )}
-            </div>
+              <div className="space-y-2">
+                <Label htmlFor="name">Nombre del proyecto *</Label>
+                <Input
+                  id="name"
+                  placeholder="ej. Rediseño de sitio web"
+                  value={name}
+                  onChange={(e) => {
+                    setName(e.target.value);
+                    if (fieldErrors.name) setFieldErrors((p) => ({ ...p, name: "" }));
+                  }}
+                  autoFocus
+                  disabled={loading}
+                  aria-invalid={!!fieldErrors.name}
+                />
+                {fieldErrors.name && (
+                  <p className="text-sm text-destructive">{fieldErrors.name}</p>
+                )}
+              </div>
 
-            <div>
-              <label htmlFor="status" className="mb-1.5 block text-sm font-medium text-foreground">
-                Estado
-              </label>
-              <select
-                id="status"
-                value={status}
-                onChange={(e) => setStatus(e.target.value as ProjectStatus)}
-                className="w-full rounded-lg border border-(--border) bg-background px-4 py-2.5 text-foreground focus:border-(--accent) focus:outline-none focus:ring-2 focus:ring-(--accent)/30"
-                disabled={loading}
-              >
-                {STATUS_OPTIONS.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </option>
-                ))}
-              </select>
-            </div>
+              <div className="space-y-2">
+                <Label htmlFor="client">Cliente *</Label>
+                <Input
+                  id="client"
+                  placeholder="ej. Empresa X"
+                  value={client}
+                  onChange={(e) => {
+                    setClient(e.target.value);
+                    if (fieldErrors.client) setFieldErrors((p) => ({ ...p, client: "" }));
+                  }}
+                  disabled={loading}
+                  aria-invalid={!!fieldErrors.client}
+                />
+                {fieldErrors.client && (
+                  <p className="text-sm text-destructive">{fieldErrors.client}</p>
+                )}
+              </div>
 
-            <div>
-              <label htmlFor="description" className="mb-1.5 block text-sm font-medium text-foreground">
-                Description <span className="text-(--muted)">(optional)</span>
-              </label>
-              <textarea
-                id="description"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder="Brief description of the project..."
-                rows={4}
-                className="w-full resize-none rounded-lg border border-(--border) px-4 py-2.5 text-foreground placeholder:text-(--muted) focus:border-(--accent) focus:outline-none focus:ring-2 focus:ring-(--accent)/30"
-                disabled={loading}
-              />
-            </div>
-          </div>
+              <div className="space-y-2">
+                <Label>Estado</Label>
+                <Select
+                  value={status}
+                  onValueChange={(v) => setStatus(v as ProjectStatus)}
+                  disabled={loading}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {STATUS_OPTIONS.map((opt) => (
+                      <SelectItem key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
 
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-end">
-            <Link
-              href="/projects"
-              className="order-2 inline-flex items-center justify-center rounded-lg border border-(--border) px-4 py-2.5 text-sm font-medium text-foreground hover:bg-background sm:order-1"
-            >
-              Cancelar
-            </Link>
-            <button
-              type="submit"
-              disabled={loading}
-              className="order-1 inline-flex items-center justify-center rounded-lg bg-(--accent) px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-(--accent-hover) disabled:opacity-70 sm:order-2"
-            >
-              {loading ? (
-                <>
-                  <span className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
-                  Guardando...
-                </>
-              ) : (
-                "Crear proyecto"
-              )}
-            </button>
-          </div>
-        </form>
+              <div className="space-y-2">
+                <Label htmlFor="description">
+                  Descripción <span className="text-muted-foreground">(opcional)</span>
+                </Label>
+                <Textarea
+                  id="description"
+                  placeholder="Breve descripción del proyecto..."
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  rows={4}
+                  disabled={loading}
+                />
+              </div>
+            </CardContent>
+            <CardFooter className="flex flex-col gap-3 sm:flex-row sm:justify-end">
+              <Button type="button" variant="outline" asChild>
+                <Link href="/projects">Cancelar</Link>
+              </Button>
+              <Button type="submit" disabled={loading}>
+                {loading ? (
+                  <>
+                    <Loader2 className="size-4 animate-spin" />
+                    Guardando...
+                  </>
+                ) : (
+                  "Crear proyecto"
+                )}
+              </Button>
+            </CardFooter>
+          </form>
+        </Card>
       </main>
     </div>
   );

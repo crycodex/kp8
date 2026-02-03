@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import dynamic from "next/dynamic";
+import { ThemeToggle } from "@/components/theme-toggle";
+import { Button } from "@/components/ui/button";
 
 const FaultyTerminal = dynamic(
   () => import("@/components/FaultyTerminal").then((m) => m.default),
@@ -11,9 +13,10 @@ const FaultyTerminal = dynamic(
 export default function Home() {
   return (
     <div className="relative min-h-screen">
-      <div
-        className="fixed inset-0 z-0"
-      >
+      <div className="fixed right-4 top-4 z-20">
+        <ThemeToggle />
+      </div>
+      <div className="fixed inset-0 z-0">
         <FaultyTerminal
           className="absolute inset-0 w-full h-full"
           scale={1.5}
@@ -36,25 +39,22 @@ export default function Home() {
         />
       </div>
       <div className="relative z-10 flex min-h-screen flex-col items-center justify-center px-4">
-        <main className="flex max-w-lg flex-col items-center gap-8 text-center backdrop-blur-2xl p-4 rounded-lg bg-(--card) shadow-sm">
+        <main className="flex max-w-lg flex-col items-center gap-8 text-center backdrop-blur-2xl p-4 rounded-lg shadow-sm">
           <div >
             <h1 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
               Dashboard de Proyectos
             </h1>
-            <p className="mt-3 text-(--muted)">
+            <p className="mt-3 text-muted-foreground">
               Gestiona tus proyectos, rastrea el estado y colabora con tus clientes.
             </p>
           </div>
-          <Link
-            href="/projects"
-            className="inline-flex items-center gap-2 rounded-lg bg-(--accent) px-6 py-3 text-base font-medium text-white transition-colors hover:bg-(--accent-hover)"
-          >
-            Ver proyectos →
-          </Link>
+          <Button asChild size="lg">
+            <Link href="/projects">Ver proyectos →</Link>
+          </Button>
           {/* creditos */}
-          <div className="text-sm text-(--muted)">
+          <div className="text-sm text-muted-foreground">
             <p>
-              <span className="font-medium">Dashboard de Proyectos</span> by <a href="https://www.isnotcristhianr.dev/" className="text-(--accent) hover:underline">@cry.code</a>
+              <span className="font-medium">Dashboard de Proyectos</span> by <a href="https://www.isnotcristhianr.dev/" className="text-foreground hover:underline">@cry.code</a>
             </p>
           </div>
         </main>

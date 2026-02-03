@@ -3,31 +3,37 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import { ArrowLeft, CheckCircle2, Loader2 } from "lucide-react";
 import { fetchProject, updateProjectStatus } from "@/lib/api";
+import { ThemeToggle } from "@/components/theme-toggle";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 import type { Project } from "@/lib/types";
 
+const STATUS_BADGE_VARIANTS: Record<Project["status"], string> = {
+  PLANNED: "bg-slate-200 text-slate-800 dark:bg-slate-700 dark:text-slate-200",
+  IN_PROGRESS: "bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-200",
+  DONE: "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-200",
+};
+
+const STATUS_LABELS: Record<Project["status"], string> = {
+  PLANNED: "Planificado",
+  IN_PROGRESS: "En progreso",
+  DONE: "Completado",
+};
+
 function StatusBadge({ status }: { status: Project["status"] }) {
-  const styles: Record<Project["status"], string> = {
-    PLANNED: "bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-200",
-    IN_PROGRESS: "bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-200",
-    DONE: "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-200",
-  };
-  const labels: Record<Project["status"], string> = {
-    PLANNED: "Planned",
-    IN_PROGRESS: "In progress",
-    DONE: "Done",
-  };
   return (
-    <span
-      className={`inline-flex shrink-0 items-center rounded-full px-3 py-1 text-sm font-medium ${styles[status]}`}
-    >
-      {labels[status]}
-    </span>
+    <Badge variant="secondary" className={cn("border-0", STATUS_BADGE_VARIANTS[status])}>
+      {STATUS_LABELS[status]}
+    </Badge>
   );
 }
 
 function formatDate(iso: string): string {
-  return new Date(iso).toLocaleDateString("en-US", {
+  return new Date(iso).toLocaleDateString("es", {
     weekday: "long",
     month: "long",
     day: "numeric",
@@ -46,7 +52,7 @@ export default function ProjectDetailPage() {
   useEffect(() => {
     fetchProject(id)
       .then(setProject)
-      .catch(() => setError("Project not found"))
+      .catch(() => setError("Proyecto no encontrado"))
       .finally(() => setLoading(false));
   }, [id]);
 
@@ -57,7 +63,7 @@ export default function ProjectDetailPage() {
       const updated = await updateProjectStatus(id, "DONE");
       setProject(updated);
     } catch {
-      setError("Could not update project");
+      setError("No se pudo actualizar el proyecto");
     } finally {
       setUpdating(false);
     }
@@ -66,8 +72,8 @@ export default function ProjectDetailPage() {
   if (loading) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center bg-background">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-(--accent) border-t-transparent" />
-        <p className="mt-4 text-sm text-(--muted)">Cargando proyecto...</p>
+        <Loader2 className="size-8 animate-spin text-primary" />
+        <p className="mt-4 text-sm text-muted-foreground">Cargando proyecto...</p>
       </div>
     );
   }
@@ -75,83 +81,82 @@ export default function ProjectDetailPage() {
   if (error || !project) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center bg-background px-4">
-        <p className="text-(--muted)">{error ?? "Proyecto no encontrado"}</p>
-        <Link
-          href="/projects"
-          className="mt-4 text-sm font-medium text-(--accent) hover:underline"
-        >
-          ← Volver a proyectos
-        </Link>
+        <p className="text-muted-foreground">{error ?? "Proyecto no encontrado"}</p>
+        <Button variant="link" asChild className="mt-4">
+          <Link href="/projects">
+            <ArrowLeft className="size-4" />
+            Volver a proyectos
+          </Link>
+        </Button>
       </div>
     );
   }
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="border-b border-(--border) bg-(--card)">
-        <div className="mx-auto max-w-3xl px-4 py-6 sm:px-6">
-          <Link
-            href="/projects"
-            className="inline-flex items-center gap-1 text-sm text-(--muted) hover:text-foreground"
-          >
-            ← Volver a proyectos
-          </Link>
+      <header className="sticky top-0 z-10 border-b bg-card/95 backdrop-blur supports-backdrop-filter:bg-card/60">
+        <div className="mx-auto flex max-w-3xl items-center justify-between px-4 py-4 sm:px-6">
+          <Button variant="ghost" size="sm" asChild>
+            <Link href="/projects">
+              <ArrowLeft className="size-4" />
+              Volver a proyectos
+            </Link>
+          </Button>
+          <ThemeToggle />
         </div>
       </header>
 
       <main className="mx-auto max-w-3xl px-4 py-8 sm:px-6">
-        <div className="rounded-xl border border-(--border) bg-(--card) shadow-sm overflow-hidden">
-          <div className="p-6 sm:p-8">
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-              <div>
-                <h1 className="text-2xl font-semibold tracking-tight text-foreground">
-                  {project.name}
-                </h1>
-                <p className="mt-1 text-(--muted)">{project.client}</p>
-              </div>
-              <StatusBadge status={project.status} />
+        <Card>
+          <CardHeader className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+            <div>
+              <CardTitle className="text-2xl">{project.name}</CardTitle>
+              <CardDescription className="mt-1">{project.client}</CardDescription>
             </div>
-
+            <StatusBadge status={project.status} />
+          </CardHeader>
+          <CardContent className="space-y-6">
             {project.description && (
-                <div className="mt-6 border-t border-(--border) pt-6">
-                <h2 className="text-sm font-medium text-(--muted)">Description</h2>
-                <p className="mt-2 text-foreground whitespace-pre-wrap">
-                  {project.description}
-                </p>
+              <div className="space-y-2">
+                <h3 className="text-sm font-medium text-muted-foreground">Descripción</h3>
+                <p className="whitespace-pre-wrap text-foreground">{project.description}</p>
               </div>
             )}
 
-            <div className="mt-6 grid gap-4 border-t border-(--border) pt-6 sm:grid-cols-2">
+            <div className="grid gap-4 border-t pt-6 sm:grid-cols-2">
               <div>
-                <h2 className="text-sm font-medium text-(--muted)">Created</h2>
+                <h3 className="text-sm font-medium text-muted-foreground">Creado</h3>
                 <p className="mt-1 text-foreground">{formatDate(project.createdAt)}</p>
               </div>
               <div>
-                <h2 className="text-sm font-medium text-(--muted)">Last updated</h2>
+                <h3 className="text-sm font-medium text-muted-foreground">Última actualización</h3>
                 <p className="mt-1 text-foreground">{formatDate(project.updatedAt)}</p>
               </div>
             </div>
-          </div>
+          </CardContent>
 
           {project.status !== "DONE" && (
-            <div className="border-t border-(--border) bg-background px-6 py-4 sm:px-8">
-              <button
+            <CardFooter className="border-t bg-muted/30">
+              <Button
                 onClick={handleMarkDone}
                 disabled={updating}
-                className="w-full rounded-lg bg-emerald-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-emerald-700 disabled:opacity-70 sm:w-auto"
+                className="bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-600 dark:hover:bg-emerald-700"
               >
                 {updating ? (
                   <>
-                    <span className="mr-2 inline-block h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                    <Loader2 className="size-4 animate-spin" />
                     Actualizando...
                   </>
                 ) : (
-                  "Marcar como Completado"
+                  <>
+                    <CheckCircle2 className="size-4" />
+                    Marcar como Completado
+                  </>
                 )}
-              </button>
-            </div>
+              </Button>
+            </CardFooter>
           )}
-        </div>
+        </Card>
       </main>
     </div>
   );
