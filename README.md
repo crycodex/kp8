@@ -1,54 +1,60 @@
-# Projects Dashboard
+# Dashboard de Proyectos
 
-A mini dashboard for managing projects, built with Next.js 16 (App Router), TypeScript, and Tailwind CSS.
+Mini dashboard para gestionar proyectos, desarrollado con Next.js 16 (App Router), TypeScript, Tailwind CSS y shadcn/ui.
 
-## Getting Started
+## Comenzar
 
 ```bash
 pnpm install
 pnpm dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) and navigate to **Projects** to start.
+Abre [http://localhost:3000](http://localhost:3000) y navega a **Proyectos** para empezar.
 
-## Features
+## Funcionalidades
 
-- **List projects** (`/projects`) — Table view with search by name or client, create button
-- **Create project** (`/projects/new`) — Form with validation, success/error feedback
-- **Project detail** (`/projects/[id]`) — Full project info, mark as Done
+- **Listado de proyectos** (`/projects`) — Tabla con búsqueda por nombre o cliente, botón para crear
+- **Crear proyecto** (`/projects/new`) — Formulario con validación, feedback de éxito/error
+- **Detalle de proyecto** (`/projects/[id]`) — Información completa, marcar como completado
 
-## Tech Stack
+## Stack tecnológico
 
 - Next.js 16 (App Router)
 - TypeScript
 - Tailwind CSS
-- Route Handlers for API
+- shadcn/ui
+- Route Handlers para la API
+- next-themes (modo claro/oscuro)
 
-## API Endpoints
+## Endpoints de la API
 
-| Method | Endpoint | Description |
+| Método | Endpoint | Descripción |
 |--------|----------|-------------|
-| GET | `/api/projects` | List all projects |
-| POST | `/api/projects` | Create a project |
-| GET | `/api/projects/[id]` | Get project by ID |
-| PATCH | `/api/projects/[id]` | Update project (e.g. status) |
+| GET | `/api/projects` | Listar todos los proyectos |
+| POST | `/api/projects` | Crear un proyecto |
+| GET | `/api/projects/[id]` | Obtener proyecto por ID |
+| PATCH | `/api/projects/[id]` | Actualizar proyecto (ej. estado) |
 
-## Persistence
+## Persistencia
 
-- **Server**: Data is stored in `.data/projects.json` (file-based local storage). Route Handlers run on the server and cannot access browser LocalStorage.
-- **Client**: API responses are synced to LocalStorage for faster loads and caching. On first load, cached data from LocalStorage is shown immediately when available.
+- **Servidor**: Los datos se almacenan en `.data/projects.json` (almacenamiento local basado en archivo). Los Route Handlers se ejecutan en el servidor y no pueden acceder al LocalStorage del navegador.
+- **Cliente**: Las respuestas de la API se sincronizan con LocalStorage para cargas más rápidas y caché. En la primera carga, se muestra inmediatamente el caché de LocalStorage cuando está disponible.
 
-## Technical Decisions
+## Decisiones técnicas
 
-1. **File-based store on server**: Next.js Route Handlers execute on the server where LocalStorage does not exist. A JSON file (`.data/projects.json`) provides equivalent local persistence without a database.
-2. **Client LocalStorage sync**: All API responses are written to LocalStorage so the client has a mirror of the data for instant display on subsequent visits.
-3. **Validation**: Both client-side (form) and server-side (API) validation for name and client (min 2 chars).
+1. **Almacenamiento en archivo en el servidor**: Los Route Handlers de Next.js se ejecutan en el servidor donde no existe LocalStorage. Un archivo JSON (`.data/projects.json`) proporciona persistencia local equivalente sin base de datos.
+2. **Sincronización LocalStorage en el cliente**: Todas las respuestas de la API se escriben en LocalStorage para que el cliente tenga un espejo de los datos y se muestren al instante en visitas posteriores.
+3. **Validación**: Validación tanto en el cliente (formulario) como en el servidor (API) para nombre y cliente (mín. 2 caracteres).
+4. **Tema claro/oscuro**: Selector manual con opciones Claro, Oscuro y Sistema (preferencia del SO).
 
-## Future Improvements
+## Mejoras futuras
 
-- Status transitions (e.g. Planned → In progress → Done) instead of only "Mark as Done"
-- Edit project form
-- Delete project
-- Pagination for large project lists
-- Filters by status
-- Dark/light mode toggle (currently follows system preference)
+- Transiciones de estado (Planificado → En progreso → Completado) en lugar de solo "Marcar como Completado"
+- Formulario de edición de proyecto
+- Eliminar proyecto
+- Paginación para listas grandes
+- Filtros por estado
+
+---
+
+**Desarrollado por** [@cry.code](https://www.isnotcristhianr.dev/)

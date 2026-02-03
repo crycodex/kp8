@@ -1,6 +1,6 @@
 import type { Project } from "./types";
 
-const STORAGE_KEY = "kp8-projects";
+const STORAGE_KEY = "kp8-projects"; //despues agregar ev
 
 function isBrowser(): boolean {
   return typeof window !== "undefined";
